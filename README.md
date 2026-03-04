@@ -1,7 +1,7 @@
 # SimpleMIDISplitChannelModifier
 A clean, Python-based simple MIDI split-point channel modifying monitor/router
 
-This file includes:
+This program includes:
 
 Four tabs (Routing, Incoming, Outgoing, MIDI Ports)
 
