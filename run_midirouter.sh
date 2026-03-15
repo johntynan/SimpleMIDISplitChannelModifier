@@ -70,5 +70,5 @@ print("\nDiagnostics complete.\n")
 EOF
 
 # 7. Run your script
-echo "=== Launching MidiFilter.py ==="
+echo "=== Launching MidiRouter.py ==="
 python3 MidiFilter.py
