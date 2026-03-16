@@ -2,6 +2,8 @@
 
 A clean, Python-based MIDI split‑point channel‑modifying monitor/router designed for live performance, experimentation, and reliable routing between MIDI devices.
 
+![App Screenshot](Images/MidiModifierScreenshot.png)
+
 ---
 
 # Quick Start (Windows, macOS, Linux)
