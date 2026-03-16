@@ -142,49 +142,51 @@ def router_loop():
             for msg in inport.iter_pending():
 
                 original = msg.copy()
+                split_point = split_var.get()
 
-                try:
-                    split = int(split_var.get())
-                except:
-                    split = 60
-
-                is_lower = None
+                # ---------------- Zone Selection ----------------
                 if msg.type in ("note_on", "note_off"):
-                    is_lower = original.note < split
 
-                    if is_lower:
-                        t = transpose_map.get(lower_transpose_var.get(), 0)
+                    if msg.note <= split_point:
+                        is_lower = True
+                        out_port = out_lower
+                        transpose_amount = transpose_map.get(lower_transpose_var.get(), 0)
+                        out_channel = lower_zone_var.get()
                     else:
-                        t = transpose_map.get(upper_transpose_var.get(), 0)
-                    msg.note = max(0, min(127, msg.note + t))
+                        is_lower = False
+                        out_port = out_upper
+                        transpose_amount = transpose_map.get(upper_transpose_var.get(), 0)
+                        out_channel = upper_zone_var.get()
 
-                    if is_lower:
-                        if lower_zone_var.get() != "Unchanged":
-                            msg.channel = int(lower_zone_var.get()) - 1
-                    else:
-                        if upper_zone_var.get() != "Unchanged":
-                            msg.channel = int(upper_zone_var.get()) - 1
+                    # Apply transpose
+                    msg.note = max(0, min(127, msg.note + transpose_amount))
 
-                if msg.type in ("note_on", "note_off"):
+                    # Apply channel remap
+                    if out_channel != "Unchanged":
+                        msg.channel = int(out_channel) - 1
+
+                    # Send + monitor
                     if is_lower:
-                        if out_lower:
-                            out_lower.send(msg)
+                        if out_port:
+                            out_port.send(msg)
                         lower_output_monitor.insert(tk.END, str(msg) + "\n")
                         lower_output_monitor.see(tk.END)
                         lower_status_var.set(
                             f"IN: {original.type} {original.note} ch{original.channel+1}   "
-                            f"OUT: {msg.type} {msg.note}   Split: {split}"
+                            f"OUT: {msg.type} {msg.note}   Split: {split_point}"
                         )
                     else:
-                        if out_upper:
-                            out_upper.send(msg)
+                        if out_port:
+                            out_port.send(msg)
                         upper_output_monitor.insert(tk.END, str(msg) + "\n")
                         upper_output_monitor.see(tk.END)
                         upper_status_var.set(
                             f"IN: {original.type} {original.note} ch{original.channel+1}   "
-                            f"OUT: {msg.type} {msg.note}   Split: {split}"
+                            f"OUT: {msg.type} {msg.note}   Split: {split_point}"
                         )
+
                 else:
+                    # Non-note messages go to both ports
                     if out_lower:
                         out_lower.send(msg)
                     if out_upper:
@@ -207,10 +209,24 @@ notebook.add(tab, text="Routing")
 panic_button = ttk.Button(tab, text="Panic", command=panic)
 panic_button.grid(row=0, column=0, columnspan=2, pady=(0, 5))
 
-# Split point
+# ---------------- Split Point (IntVar + Spinbox + Callback) ----------------
+
+split_var = tk.IntVar(value=60)
+
+def update_split_point(*args):
+    router_status_var.set(f"Split point set to {split_var.get()}")
+
+split_var.trace_add("write", update_split_point)
+
 ttk.Label(tab, text="Split Point (0–127):").grid(row=1, column=0, columnspan=2)
-split_var = tk.StringVar(value="60")
-ttk.Entry(tab, textvariable=split_var, width=8, justify="center").grid(row=2, column=0, columnspan=2, pady=5)
+split_spin = tk.Spinbox(
+    tab,
+    from_=0,
+    to=127,
+    textvariable=split_var,
+    width=5
+)
+split_spin.grid(row=2, column=0, columnspan=2, pady=5)
 
 # Start/Stop
 start_button = ttk.Button(tab, text="Start", command=start_router)
@@ -270,7 +286,7 @@ upper_output_port_menu = ttk.OptionMenu(tab, upper_output_port_var, "")
 lower_output_port_menu.grid(row=11, column=0, sticky="ew")
 upper_output_port_menu.grid(row=11, column=1, sticky="ew")
 
-# LOWER OUTPUT + STATUS (bottom, fills column)
+# LOWER OUTPUT + STATUS
 ttk.Label(tab, text="Lower Zone Output:").grid(row=12, column=0, sticky="w")
 lower_output_monitor = scrolledtext.ScrolledText(tab, width=30, height=6)
 lower_output_monitor.grid(row=13, column=0, sticky="nsew", padx=(0, 5))
@@ -281,7 +297,7 @@ ttk.Label(tab, textvariable=lower_status_var, relief="sunken", anchor="w").grid(
     row=15, column=0, sticky="ew", padx=(0, 5), pady=(0, 5)
 )
 
-# UPPER OUTPUT + STATUS (bottom, fills column)
+# UPPER OUTPUT + STATUS
 ttk.Label(tab, text="Upper Zone Output:").grid(row=12, column=1, sticky="e")
 upper_output_monitor = scrolledtext.ScrolledText(tab, width=30, height=6)
 upper_output_monitor.grid(row=13, column=1, sticky="nsew", padx=(5, 0))
@@ -292,7 +308,7 @@ ttk.Label(tab, textvariable=upper_status_var, relief="sunken", anchor="w").grid(
     row=15, column=1, sticky="ew", padx=(5, 0), pady=(0, 5)
 )
 
-# Give the output monitor rows vertical weight so they stretch to bottom
+# Stretch rows
 tab.rowconfigure(13, weight=1)
 tab.columnconfigure(0, weight=1)
 tab.columnconfigure(1, weight=1)
