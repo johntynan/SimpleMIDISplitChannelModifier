@@ -205,27 +205,34 @@ notebook.pack(fill="both", expand=True)
 tab = ttk.Frame(notebook, padding=10)
 notebook.add(tab, text="Routing")
 
+# ---------------- DEFINE ALL VARIABLES FIRST ----------------
+
+split_var = tk.IntVar(value=60)
+
+router_status_var = tk.StringVar(value="Idle.")
+
+lower_transpose_var = tk.StringVar(value="0")
+upper_transpose_var = tk.StringVar(value="0")
+
+zone_options = ["Unchanged"] + [str(i) for i in range(1, 17)]
+lower_zone_var = tk.StringVar(value="Unchanged")
+upper_zone_var = tk.StringVar(value="Unchanged")
+
+lower_output_var = tk.StringVar(value="Output Channel: (incoming)")
+upper_output_var = tk.StringVar(value="Output Channel: (incoming)")
+
+lower_output_port_var = tk.StringVar(value="")
+upper_output_port_var = tk.StringVar(value="")
+
+# ---------------- GUI ELEMENTS ----------------
+
 # Panic button
 panic_button = ttk.Button(tab, text="Panic", command=panic)
 panic_button.grid(row=0, column=0, columnspan=2, pady=(0, 5))
 
-# ---------------- Split Point (IntVar + Spinbox + Callback) ----------------
-
-split_var = tk.IntVar(value=60)
-
-def update_split_point(*args):
-    router_status_var.set(f"Split point set to {split_var.get()}")
-
-split_var.trace_add("write", update_split_point)
-
+# Split point label + spinbox
 ttk.Label(tab, text="Split Point (0–127):").grid(row=1, column=0, columnspan=2)
-split_spin = tk.Spinbox(
-    tab,
-    from_=0,
-    to=127,
-    textvariable=split_var,
-    width=5
-)
+split_spin = tk.Spinbox(tab, from_=0, to=127, textvariable=split_var, width=5)
 split_spin.grid(row=2, column=0, columnspan=2, pady=5)
 
 # Start/Stop
@@ -234,19 +241,21 @@ stop_button = ttk.Button(tab, text="Stop", command=stop_router)
 start_button.grid(row=3, column=0, pady=5, sticky="e")
 stop_button.grid(row=3, column=1, pady=5, sticky="w")
 
-# Centered, narrower router status bar
-router_status_var = tk.StringVar(value="Idle.")
+# Router status bar (centered)
 status_frame = ttk.Frame(tab)
 status_frame.grid(row=4, column=0, columnspan=2, pady=(0, 10))
 status_label = ttk.Label(status_frame, textvariable=router_status_var, relief="sunken", anchor="w", width=40)
 status_label.pack()
 
+# --- Callback (now safe) ---
+def update_split_point(*args):
+    router_status_var.set(f"Split point set to {split_var.get()}")
+
+split_var.trace_add("write", update_split_point)
+
 # Transpose
 ttk.Label(tab, text="Transpose Lower Zone:").grid(row=5, column=0, sticky="w")
 ttk.Label(tab, text="Transpose Upper Zone:").grid(row=5, column=1, sticky="e")
-
-lower_transpose_var = tk.StringVar(value="0")
-upper_transpose_var = tk.StringVar(value="0")
 
 lower_transpose_dropdown = create_scrollable_dropdown(tab, lower_transpose_var, transpose_options)
 upper_transpose_dropdown = create_scrollable_dropdown(tab, upper_transpose_var, transpose_options)
@@ -258,27 +267,16 @@ upper_transpose_dropdown.grid(row=6, column=1, sticky="e")
 ttk.Label(tab, text="Lower Zone Channel:").grid(row=7, column=0, sticky="w")
 ttk.Label(tab, text="Upper Zone Channel:").grid(row=7, column=1, sticky="e")
 
-zone_options = ["Unchanged"] + [str(i) for i in range(1, 17)]
-
-lower_zone_var = tk.StringVar(value="Unchanged")
-upper_zone_var = tk.StringVar(value="Unchanged")
-
 ttk.OptionMenu(tab, lower_zone_var, "Unchanged", *zone_options).grid(row=8, column=0, sticky="w")
 ttk.OptionMenu(tab, upper_zone_var, "Unchanged", *zone_options).grid(row=8, column=1, sticky="e")
 
 # Output channel labels
-lower_output_var = tk.StringVar(value="Output Channel: (incoming)")
-upper_output_var = tk.StringVar(value="Output Channel: (incoming)")
-
 ttk.Label(tab, textvariable=lower_output_var).grid(row=9, column=0, sticky="w")
 ttk.Label(tab, textvariable=upper_output_var).grid(row=9, column=1, sticky="e")
 
 # Output ports
 ttk.Label(tab, text="Lower Zone Output Port:").grid(row=10, column=0, sticky="w")
 ttk.Label(tab, text="Upper Zone Output Port:").grid(row=10, column=1, sticky="e")
-
-lower_output_port_var = tk.StringVar(value="")
-upper_output_port_var = tk.StringVar(value="")
 
 lower_output_port_menu = ttk.OptionMenu(tab, lower_output_port_var, "")
 upper_output_port_menu = ttk.OptionMenu(tab, upper_output_port_var, "")
