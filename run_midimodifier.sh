@@ -71,4 +71,4 @@ EOF
 
 # 7. Run your script
 echo "=== Launching MidiModifier.py ==="
-python3 MidiFilter.py
+python3 MidiModifier.py
