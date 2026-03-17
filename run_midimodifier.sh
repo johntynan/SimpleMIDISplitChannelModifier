@@ -2,73 +2,40 @@
 
 echo "=== MIDI + Tkinter Environment Setup ==="
 
-# 1. Install system dependencies for python-rtmidi
+# 1. System dependencies
 echo "Installing system dependencies..."
 sudo apt update
-sudo apt install -y build-essential libasound2-dev libjack-dev
+sudo apt install -y build-essential libasound2-dev libjack-dev python3-tk
 
-# 2. Install Tkinter if missing
-echo "Checking for Tkinter..."
-python3 - << 'EOF'
-try:
-    import tkinter
-    print("✓ Tkinter is already installed.")
-except Exception:
-    print("✗ Tkinter missing. Will install python3-tk.")
-EOF
-
-sudo apt install -y python3-tk
-
-# 3. Create virtual environment if missing
+# 2. Create venv if missing
 if [ ! -d "venv" ]; then
     echo "Creating virtual environment..."
     python3 -m venv venv
 fi
 
-# 4. Activate venv
-echo "Activating virtual environment..."
-source venv/bin/activate
+# Define venv executables
+VENV_PYTHON="venv/bin/python3"
+VENV_PIP="venv/bin/pip"
 
-# 5. Install Python packages
+# 3. Upgrade pip inside venv
+echo "Upgrading pip..."
+$VENV_PIP install --upgrade pip
+
+# 4. Install Python packages inside venv
 echo "Installing Python packages..."
-pip install --upgrade pip
-pip install mido python-rtmidi
+$VENV_PIP install mido python-rtmidi
 
-# 6. Diagnostic check
+# 5. Diagnostics
 echo "=== Running diagnostics ==="
-python3 - << 'EOF'
-print("Checking mido...")
-try:
-    import mido
-    print("  ✓ mido version:", mido.__version__)
-except Exception as e:
-    print("  ✗ mido import failed:", e)
-
-print("\nChecking python-rtmidi...")
-try:
-    import rtmidi
-    print("  ✓ python-rtmidi imported successfully")
-except Exception as e:
-    print("  ✗ python-rtmidi import failed:", e)
-
-print("\nChecking Tkinter...")
-try:
-    import tkinter
-    print("  ✓ Tkinter imported successfully")
-except Exception as e:
-    print("  ✗ Tkinter import failed:", e)
-
-print("\nChecking MIDI ports...")
-try:
-    import mido
-    print("  Input ports:", mido.get_input_names())
-    print("  Output ports:", mido.get_output_names())
-except Exception as e:
-    print("  ✗ Error listing ports:", e)
-
-print("\nDiagnostics complete.\n")
+$VENV_PYTHON - << 'EOF'
+import mido, tkinter
+print("✓ mido:", mido.__version__)
+print("✓ python-rtmidi imported")
+print("✓ Tkinter imported")
+print("Input ports:", mido.get_input_names())
+print("Output ports:", mido.get_output_names())
 EOF
 
-# 7. Run your script
+# 6. Run your script
 echo "=== Launching MidiModifier.py ==="
-python3 MidiModifier.py
+$VENV_PYTHON MidiModifier.py
