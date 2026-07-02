@@ -226,90 +226,89 @@ upper_output_port_var = tk.StringVar(value="")
 
 # ---------------- GUI ELEMENTS ----------------
 
-# Panic button
+# Row 0 — Panic centered
 panic_button = ttk.Button(tab, text="Panic", command=panic)
-panic_button.grid(row=0, column=0, columnspan=2, pady=(0, 5))
+panic_button.grid(row=0, column=1, pady=(0, 5))
 
-# Split point label + spinbox
-ttk.Label(tab, text="Split Point (0–127):").grid(row=1, column=0, columnspan=2)
-split_spin = tk.Spinbox(tab, from_=0, to=127, textvariable=split_var, width=5)
-split_spin.grid(row=2, column=0, columnspan=2, pady=5)
-
-# Start/Stop
-start_button = ttk.Button(tab, text="Start", command=start_router)
-stop_button = ttk.Button(tab, text="Stop", command=stop_router)
-start_button.grid(row=3, column=0, pady=5, sticky="e")
-stop_button.grid(row=3, column=1, pady=5, sticky="w")
-
-# Router status bar (centered)
-status_frame = ttk.Frame(tab)
-status_frame.grid(row=4, column=0, columnspan=2, pady=(0, 10))
-status_label = ttk.Label(status_frame, textvariable=router_status_var, relief="sunken", anchor="w", width=40)
-status_label.pack()
-
-# --- Callback (now safe) ---
-def update_split_point(*args):
-    router_status_var.set(f"Split point set to {split_var.get()}")
-
-split_var.trace_add("write", update_split_point)
-
-# Transpose
-ttk.Label(tab, text="Transpose Lower Zone:").grid(row=5, column=0, sticky="w")
-ttk.Label(tab, text="Transpose Upper Zone:").grid(row=5, column=1, sticky="e")
-
+# Row 1 — Transpose left/right
+ttk.Label(tab, text="Transpose Lower Zone:").grid(row=1, column=0, sticky="w", padx=(10, 5))
 lower_transpose_dropdown = create_scrollable_dropdown(tab, lower_transpose_var, transpose_options)
+lower_transpose_dropdown.grid(row=2, column=0, sticky="w", padx=(10, 5))
+
+ttk.Label(tab, text="Transpose Upper Zone:").grid(row=1, column=2, sticky="e", padx=(5, 10))
 upper_transpose_dropdown = create_scrollable_dropdown(tab, upper_transpose_var, transpose_options)
+upper_transpose_dropdown.grid(row=2, column=2, sticky="e", padx=(5, 10))
 
-lower_transpose_dropdown.grid(row=6, column=0, sticky="w")
-upper_transpose_dropdown.grid(row=6, column=1, sticky="e")
+# Row 2 — Zone Channel Labels + Split Point Label
+ttk.Label(tab, text="Lower Zone Channel:").grid(row=3, column=0, sticky="w", padx=(10, 5))
+ttk.Label(tab, text="Split Point (0–127):").grid(row=3, column=1)
+ttk.Label(tab, text="Upper Zone Channel:").grid(row=3, column=2, sticky="e", padx=(5, 10))
 
-# Channels
-ttk.Label(tab, text="Lower Zone Channel:").grid(row=7, column=0, sticky="w")
-ttk.Label(tab, text="Upper Zone Channel:").grid(row=7, column=1, sticky="e")
+# Row 3 — Zone Channel Controls + Split + Start/Stop
+ttk.OptionMenu(tab, lower_zone_var, "Unchanged", *zone_options).grid(row=4, column=0, sticky="w", padx=(10, 5))
 
-ttk.OptionMenu(tab, lower_zone_var, "Unchanged", *zone_options).grid(row=8, column=0, sticky="w")
-ttk.OptionMenu(tab, upper_zone_var, "Unchanged", *zone_options).grid(row=8, column=1, sticky="e")
+split_spin = tk.Spinbox(tab, from_=0, to=127, textvariable=split_var, width=5)
+split_spin.grid(row=4, column=1, pady=5)
 
-# Output channel labels
-ttk.Label(tab, textvariable=lower_output_var).grid(row=9, column=0, sticky="w")
-ttk.Label(tab, textvariable=upper_output_var).grid(row=9, column=1, sticky="e")
+ttk.OptionMenu(tab, upper_zone_var, "Unchanged", *zone_options).grid(row=4, column=2, sticky="e", padx=(5, 10))
 
-# Output ports
-ttk.Label(tab, text="Lower Zone Output Port:").grid(row=10, column=0, sticky="w")
-ttk.Label(tab, text="Upper Zone Output Port:").grid(row=10, column=1, sticky="e")
+# FIX: Start/Stop inside a frame so both buttons show
+startstop_frame = ttk.Frame(tab)
+startstop_frame.grid(row=5, column=1)
 
+start_button = ttk.Button(startstop_frame, text="Start", command=start_router)
+stop_button = ttk.Button(startstop_frame, text="Stop", command=stop_router)
+
+start_button.pack(side="left", padx=(0, 10))
+stop_button.pack(side="right", padx=(10, 0))
+
+# Row 4 — Output Channel Labels
+ttk.Label(tab, textvariable=lower_output_var).grid(row=6, column=0, sticky="w", padx=(10, 5))
+ttk.Label(tab, textvariable=upper_output_var).grid(row=6, column=2, sticky="e", padx=(5, 10))
+
+# Row 5 — Output Port Labels
+ttk.Label(tab, text="Lower Zone Output Port:").grid(row=7, column=0, sticky="w", padx=(10, 5))
+ttk.Label(tab, text="Upper Zone Output Port:").grid(row=7, column=2, sticky="e", padx=(5, 10))
+
+# Row 6 — Output Port Controls
 lower_output_port_menu = ttk.OptionMenu(tab, lower_output_port_var, "")
 upper_output_port_menu = ttk.OptionMenu(tab, upper_output_port_var, "")
 
-lower_output_port_menu.grid(row=11, column=0, sticky="ew")
-upper_output_port_menu.grid(row=11, column=1, sticky="ew")
+lower_output_port_menu.grid(row=8, column=0, sticky="ew", padx=(10, 5))
+upper_output_port_menu.grid(row=8, column=2, sticky="ew", padx=(5, 10))
 
-# LOWER OUTPUT + STATUS
-ttk.Label(tab, text="Lower Zone Output:").grid(row=12, column=0, sticky="w")
-lower_output_monitor = scrolledtext.ScrolledText(tab, width=30, height=6)
-lower_output_monitor.grid(row=13, column=0, sticky="nsew", padx=(0, 5))
+# Row 7–10 — Output Monitors + Status
+ttk.Label(tab, text="Lower Zone Output:").grid(row=9, column=0, sticky="w", padx=(10, 5))
+lower_output_monitor = scrolledtext.ScrolledText(tab, width=30, height=4)
+lower_output_monitor.grid(row=10, column=0, sticky="nsew", padx=(10, 5))
 
-ttk.Label(tab, text="Lower Zone Status:").grid(row=14, column=0, sticky="w")
+ttk.Label(tab, text="Lower Zone Status:").grid(row=11, column=0, sticky="w", padx=(10, 5))
 lower_status_var = tk.StringVar(value="Lower zone idle.")
 ttk.Label(tab, textvariable=lower_status_var, relief="sunken", anchor="w").grid(
-    row=15, column=0, sticky="ew", padx=(0, 5), pady=(0, 5)
+    row=12, column=0, sticky="ew", padx=(10, 5), pady=(0, 5)
 )
 
-# UPPER OUTPUT + STATUS
-ttk.Label(tab, text="Upper Zone Output:").grid(row=12, column=1, sticky="e")
-upper_output_monitor = scrolledtext.ScrolledText(tab, width=30, height=6)
-upper_output_monitor.grid(row=13, column=1, sticky="nsew", padx=(5, 0))
+ttk.Label(tab, text="Upper Zone Output:").grid(row=9, column=2, sticky="e", padx=(5, 10))
+upper_output_monitor = scrolledtext.ScrolledText(tab, width=30, height=4)
+upper_output_monitor.grid(row=10, column=2, sticky="nsew", padx=(5, 10))
 
-ttk.Label(tab, text="Upper Zone Status:").grid(row=14, column=1, sticky="e")
+ttk.Label(tab, text="Upper Zone Status:").grid(row=11, column=2, sticky="e", padx=(5, 10))
 upper_status_var = tk.StringVar(value="Upper zone idle.")
 ttk.Label(tab, textvariable=upper_status_var, relief="sunken", anchor="w").grid(
-    row=15, column=1, sticky="ew", padx=(5, 0), pady=(0, 5)
+    row=12, column=2, sticky="ew", padx=(5, 10), pady=(0, 5)
 )
 
+# Bottom — Router Status centered
+status_frame = ttk.Frame(tab)
+status_frame.grid(row=13, column=0, columnspan=3, pady=(10, 0))
+status_label = ttk.Label(status_frame, textvariable=router_status_var, relief="sunken", anchor="center", width=40)
+status_label.pack()
+
 # Stretch rows
-tab.rowconfigure(13, weight=1)
+tab.rowconfigure(10, weight=1)
 tab.columnconfigure(0, weight=1)
-tab.columnconfigure(1, weight=1)
+tab.columnconfigure(1, weight=0)  # narrow center column
+tab.columnconfigure(2, weight=1)
 
 # ---------------- MIDI Ports Tab ----------------
 
@@ -351,3 +350,4 @@ tab_ports.columnconfigure(1, weight=1)
 # ---------------- Main Loop ----------------
 
 root.mainloop()
+
