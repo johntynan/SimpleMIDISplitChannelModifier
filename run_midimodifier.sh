@@ -1,41 +1,76 @@
-#!/usr/bin/env bash
+#!/bin/bash
+set -e
 
-echo "=== MIDI + Tkinter Environment Setup ==="
+echo "=== MIDI Router Launcher ==="
 
-# 1. System dependencies
-echo "Installing system dependencies..."
-sudo apt update
-sudo apt install -y build-essential libasound2-dev libjack-dev python3-tk
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR"
 
-# 2. Create venv if missing
-if [ ! -d "venv" ]; then
-    echo "Creating virtual environment..."
-    python3 -m venv venv
+# -------------------------------
+# 1. Ensure Python 3.12 exists
+# -------------------------------
+if ! command -v python3.12 >/dev/null 2>&1; then
+    echo "ERROR: python3.12 is not installed."
+    echo "Install it with:"
+    echo "  sudo apt install python3.12 python3.12-venv python3.12-tk"
+    exit 1
 fi
 
-# Define venv executables
-VENV_PYTHON="venv/bin/python3"
-VENV_PIP="venv/bin/pip"
+PY=python3.12
 
-# 3. Upgrade pip inside venv
-echo "Upgrading pip..."
-$VENV_PIP install --upgrade pip
+echo "Using Python: $($PY -V)"
 
-# 4. Install Python packages inside venv
+# -------------------------------
+# 2. Recreate venv if missing or wrong version
+# -------------------------------
+if [ ! -d "venv" ]; then
+    echo "Creating new Python 3.12 venv..."
+    $PY -m venv venv
+fi
+
+# Check venv Python version
+VENV_PY="./venv/bin/python"
+VENV_VERSION="$($VENV_PY -V 2>/dev/null || echo 'NONE')"
+
+if [[ "$VENV_VERSION" != *"3.12"* ]]; then
+    echo "Venv is wrong version ($VENV_VERSION). Recreating..."
+    rm -rf venv
+    $PY -m venv venv
+fi
+
+source venv/bin/activate
+
+# -------------------------------
+# 3. Install required packages
+# -------------------------------
 echo "Installing Python packages..."
-$VENV_PIP install mido python-rtmidi
+pip install --upgrade pip
+pip install mido python-rtmidi
 
-# 5. Diagnostics
+# -------------------------------
+# 4. Diagnostics
+# -------------------------------
 echo "=== Running diagnostics ==="
-$VENV_PYTHON - << 'EOF'
-import mido, tkinter
-print("✓ mido:", mido.__version__)
-print("✓ python-rtmidi imported")
-print("✓ Tkinter imported")
-print("Input ports:", mido.get_input_names())
-print("Output ports:", mido.get_output_names())
+
+echo "Python version: $($VENV_PY -V)"
+echo "Mido location: $(python - <<EOF
+import mido, sys
+print(mido.__file__)
+EOF
+)"
+
+# Check Tkinter
+echo "Checking Tkinter..."
+python - <<EOF
+try:
+    import tkinter
+    print("Tkinter OK")
+except Exception as e:
+    print("Tkinter ERROR:", e)
 EOF
 
-# 6. Run your script
+# -------------------------------
+# 5. Launch the router
+# -------------------------------
 echo "=== Launching MidiModifier.py ==="
-$VENV_PYTHON MidiModifier.py
+exec python MidiModifier.py

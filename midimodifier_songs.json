@@ -1,0 +1,52 @@
+{
+    "songs": {
+        "bass and vibraphone": {
+            "split_point": 60,
+            "lower_zone": "2",
+            "upper_zone": "4",
+            "lower_transpose": "0",
+            "upper_transpose": "0",
+            "input_port": "Midi Through:Midi Through Port-0 14:0",
+            "lower_output_port": "Midi Through:Midi Through Port-0 14:0",
+            "upper_output_port": "Midi Through:Midi Through Port-0 14:0",
+            "lower_instr_file": "sc55.gm.json",
+            "upper_instr_file": "sc55.gm.json",
+            "lower_program": "32 - Acoustic Bass",
+            "upper_program": "11 - Vibraphone",
+            "lower_bank_msb": 0,
+            "lower_bank_lsb": 0,
+            "upper_bank_msb": 0,
+            "upper_bank_lsb": 0,
+            "drumkit_file": "dm5_drumkits.gm.json",
+            "drumkit": "13 - Fat",
+            "drumkit_channel": 10
+        },
+        "organ and vibraphone": {
+            "split_point": 60,
+            "lower_zone": "2",
+            "upper_zone": "4",
+            "lower_transpose": "0",
+            "upper_transpose": "0",
+            "input_port": "Midi Through:Midi Through Port-0 14:0",
+            "lower_output_port": "Midi Through:Midi Through Port-0 14:0",
+            "upper_output_port": "Midi Through:Midi Through Port-0 14:0",
+            "lower_instr_file": "sc55.gm.json",
+            "upper_instr_file": "sc55.gm.json",
+            "lower_program": "17 - Organ 2 (Percussive)",
+            "upper_program": "11 - Vibraphone",
+            "lower_bank_msb": 0,
+            "lower_bank_lsb": 0,
+            "upper_bank_msb": 0,
+            "upper_bank_lsb": 0,
+            "drumkit_file": "dm5_drumkits.gm.json",
+            "drumkit": "13 - Fat",
+            "drumkit_channel": 10
+        }
+    },
+    "setlists": {
+        "Demo Songs": [
+            "bass and vibraphone",
+            "organ and vibraphone"
+        ]
+    }
+}

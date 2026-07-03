@@ -1,0 +1,23 @@
+{
+  "0":  "Standard",
+  "1":  "Room",
+  "2":  "Power",
+  "3":  "Electronic",
+  "4":  "TR-808",
+  "5":  "TR-909",
+  "6":  "Jazz",
+  "7":  "Brush",
+  "8":  "Orchestra",
+  "9":  "SFX",
+  "10": "Percussion",
+  "11": "Studio",
+  "12": "Dry",
+  "13": "Fat",
+  "14": "Tight",
+  "15": "Metal",
+  "16": "Dance",
+  "17": "Hip-Hop",
+  "18": "House",
+  "19": "Techno",
+  "20": "Custom"
+}
