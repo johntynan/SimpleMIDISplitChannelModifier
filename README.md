@@ -1,6 +1,7 @@
-# SimpleMIDISplitChannelModifier
+# SimpleMIDISplitChannelModifier / MidiModifier  
+*A Raspberry Pi–optimized MIDI routing and performance tool*
 
-A clean, Python-based MIDI split‑point channel‑modifying monitor/router designed for live performance, experimentation, and reliable routing between MIDI devices.
+SimpleMIDISplitChannelModifier (also known as **MidiModifier**) is a touchscreen‑friendly MIDI router designed for Raspberry Pi systems with small 480×320 displays. It provides real‑time MIDI monitoring, split‑point routing, GM/GS instrument control, drumkit selection, program changes, and JSON‑based song presets and setlists — all inside a compact multi‑tab Tkinter GUI.
 
 ![App Screenshot](Images/MidiModifierScreenshot.png)
 
@@ -63,13 +64,15 @@ Once launched, select your MIDI ports, set your split point, and begin routing.
 
 SimpleMIDISplitChannelModifier is a lightweight, cross‑platform MIDI router that provides:
 
-- A configurable split point for dividing the keyboard into zones
-- Independent routing for Lower and Upper zones
-- Per‑zone channel remapping
-- Real‑time Incoming and Outgoing MIDI monitoring
-- Safe fallback behavior when no ports are selected
-- A thread‑safe routing loop for stable live performance
-- Compatibility with Windows, macOS, and Linux using Python, mido, and python‑rtmidi
+- A configurable split point for dividing the keyboard into zones  
+- Independent routing for Lower and Upper zones  
+- Per‑zone channel remapping  
+- Real‑time Incoming and Outgoing MIDI monitoring  
+- Safe fallback behavior when no ports are selected  
+- A thread‑safe routing loop for stable live performance  
+- Compatibility with Windows, macOS, Linux, and Raspberry Pi  
+- GM instrument definitions, GS bank support, drumkit selection  
+- Song presets and setlists for live performance workflows  
 
 Main script: `MidiModifier.py`  
 Helper script (Unix-like systems): `run_midimodifier.sh`
@@ -78,55 +81,63 @@ Helper script (Unix-like systems): `run_midimodifier.sh`
 
 # Features
 
-Four-tab interface:
-- Routing: split point, zone routing, channel remapping
-- Incoming: real-time view of incoming MIDI messages
-- Outgoing: real-time view of routed/modified messages
-- MIDI Ports: explicit input/output port selection
+## Core Routing
+- Adjustable split point  
+- Lower/Upper zone routing  
+- Per‑zone transpose  
+- Per‑zone channel override  
+- Per‑zone output port selection  
+- Non‑note messages broadcast to both ports  
 
-Split-point routing:
-- Adjustable split point at the top of the Routing tab
-- Lower and Upper zones defined relative to the split point
-- Each zone can keep the original channel or remap to a new one
+## Monitoring
+- Real‑time Incoming MIDI view  
+- Real‑time Outgoing MIDI view  
+- Per‑zone status lines showing incoming/outgoing notes  
 
-Port selection:
-- Exact ALSA/MIDO port selection
-- Safe fallback when no ports are selected
-- Works with hardware MIDI devices and virtual ports (loopMIDI, IAC Driver, ALSA virtual ports, etc.)
+## GM / GS Support
+- GM instrument definition files (`*.gm.json`)  
+- Program Change for Lower/Upper zones  
+- GS Bank Select (MSB/LSB)  
+- GS Program Change  
+- GS Reset SysEx  
 
-Thread-safe routing loop:
-- Stable under continuous live MIDI input
-- Designed for performance and reliability
+## Drumkits
+- Drumkit definition files (`*drumkits.gm.json`)  
+- Drumkit program selection  
+- Drumkit MIDI channel selection  
+- GS-compatible drumkit bank messages  
 
----
+## Presets & Setlists
+- Save/load/delete song presets  
+- Presets store all routing parameters  
+- Create/update/delete setlists  
+- Start setlist playback  
+- Advance to next song  
 
-# Requirements
-
-- Python 3.8 or newer
-- Python packages: `mido`, `python-rtmidi`
-- At least one MIDI input and output device (hardware or virtual)
-
----
-
-# Getting the Code
-
-Clone the repository:
-```
-git clone https://github.com/johntynan/SimpleMIDISplitChannelModifier.git
-cd SimpleMIDISplitChannelModifier
-```
-
-Or download ZIP:
-1. Visit the GitHub repository
-2. Select Code → Download ZIP
-3. Extract the ZIP
-4. Open a terminal or command prompt inside the extracted folder
+## Safety & Performance
+- Panic button (All Notes Off + Reset Controllers)  
+- Thread‑safe routing loop  
+- Safe fallback when no ports selected  
+- Optimized for Raspberry Pi touchscreens  
 
 ---
 
-# Setting Up the Python Environment
+# Hardware Requirements
 
-Create a virtual environment:
+- Raspberry Pi 3 / 4 / Zero 2 (optional)  
+- 480×320 touchscreen (Waveshare, PiTFT, etc.)  
+- USB MIDI keyboard, drum module, or controller  
+- Optional: Roland GS/SC‑55/SC‑88 compatible synth  
+- Optional: GM instrument definition JSON files  
+- Optional: GM drumkit definition JSON files  
+
+---
+
+# Installation (Detailed)
+
+## Windows / macOS / Linux
+
+### Create a virtual environment
 
 Windows:
 ```
@@ -140,131 +151,203 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-Install dependencies:
+### Install dependencies
 
-If a requirements.txt exists:
-```
-pip install -r requirements.txt
-```
-
-Otherwise:
 ```
 pip install mido python-rtmidi
 ```
 
----
+### Run the application
 
-# Running the Application
-
-## Windows
-
-1. Open Command Prompt or PowerShell
-2. Navigate to the project folder:
-```
-cd path\to\SimpleMIDISplitChannelModifier
-```
-3. Activate the virtual environment:
-```
-.venv\Scripts\activate
-```
-4. Run the application:
+Windows:
 ```
 python MidiModifier.py
 ```
 
-If python does not work, try:
-```
-py MidiModifier.py
-```
-
----
-
-## macOS
-
-1. Open Terminal
-2. Navigate to the project folder:
-```
-cd /path/to/SimpleMIDISplitChannelModifier
-```
-3. Activate the virtual environment:
-```
-source .venv/bin/activate
-```
-4. Run the application:
+macOS / Linux:
 ```
 python3 MidiModifier.py
 ```
 
----
+### Optional: Use the launcher script (macOS/Linux)
 
-## Linux
-
-Option 1: Run directly
-```
-cd /path/to/SimpleMIDISplitChannelModifier
-source .venv/bin/activate
-python3 MidiModifier.py
-```
-
-Option 2: Use the helper script
-
-1. Ensure the script exists:
-```
-touch run_midimodifier.sh
-```
-2. Make it executable:
 ```
 chmod +x run_midimodifier.sh
-```
-If needed:
-```
-sudo chmod +x run_midimodifier.sh
-```
-3. Confirm the script ends with:
-```
-# 7. Run your script
-echo "=== Launching MidiModifier.py ==="
-python3 MidiModifier.py
-```
-4. Run it:
-```
 ./run_midimodifier.sh
 ```
 
 ---
 
-# Basic Usage
+# Running on Raspberry Pi
 
-1. Launch the application
-2. Open the MIDI Ports tab and select input/output ports
-3. Open the Routing tab and set your split point
-4. Configure Lower and Upper zone routing
-5. Use Incoming and Outgoing tabs to verify routing behavior
+The GUI automatically scales for 480×320 touchscreens using `ui_scale()`.
 
-If no ports are selected, the application remains in a safe fallback state.
+Recommended packages:
+
+```
+sudo apt install python3 python3-pip python3-tk python3-rtmidi
+```
+
+Run:
+
+```
+python3 MidiModifier.py
+```
+
+---
+
+# MIDI Routing Logic
+
+Routing is based on a **split point**:
+
+- Notes ≤ split point → Lower zone  
+- Notes > split point → Upper zone  
+
+Each zone has:
+
+- Independent transpose  
+- Independent MIDI channel  
+- Independent output port  
+
+Non‑note messages (pitch bend, CC, aftertouch, etc.) are sent to **both** output ports.
+
+---
+
+# GM Instrument Definitions
+
+GM instrument definition files (`*.gm.json`) map program numbers to instrument names:
+
+```json
+{
+  "0": "Acoustic Grand Piano",
+  "1": "Bright Piano",
+  "2": "Electric Grand"
+}
+```
+
+These files populate the Program Change dropdowns.
+
+---
+
+# Drumkit Definitions
+
+Drumkit definition files (`*drumkits.gm.json`) map program numbers to drumkits:
+
+```json
+{
+  "0": "Standard Kit",
+  "8": "Room Kit",
+  "16": "Power Kit"
+}
+```
+
+GS‑compatible drumkits (SC‑55/SC‑88) automatically send Bank Select MSB/LSB.
+
+---
+
+# GS Support
+
+### GS Bank Select
+- CC0 → Bank MSB  
+- CC32 → Bank LSB  
+
+### GS Program Change
+Sent after Bank Select.
+
+### GS Reset SysEx
+Resets GS‑compatible devices to default state.
+
+---
+
+# Song Presets
+
+Song presets store **all routing parameters**, including:
+
+- Split point  
+- Transpose  
+- Channels  
+- Ports  
+- Instrument files  
+- Program numbers  
+- GS bank values  
+- Drumkit file + selection  
+- Drumkit channel  
+
+Presets are saved in:
+
+```
+midimodifier_songs.json
+```
+
+---
+
+# Setlists
+
+Setlists are ordered lists of song presets:
+
+```json
+{
+  "setlists": {
+    "My Setlist": ["Intro", "Verse", "Chorus"]
+  }
+}
+```
+
+You can:
+
+- Create/update/delete setlists  
+- Start a setlist  
+- Advance to the next song  
+
+Perfect for live performance.
+
+---
+
+# Panic Button
+
+Sends the following on **all 16 channels**:
+
+- CC123 — All Notes Off  
+- CC64 — Sustain Off  
+- CC121 — Reset All Controllers  
+
+Useful for stuck notes or runaway sustain.
 
 ---
 
 # Troubleshooting
 
-No MIDI ports appear:
-- Ensure your MIDI devices or virtual ports are active before launching the application.
+### No MIDI ports appear
+- Ensure your MIDI devices or virtual ports are active before launching.
 
-Permission errors on macOS/Linux:
+### Permission errors (macOS/Linux)
 ```
 chmod +x run_midimodifier.sh
 ```
 Use sudo only if necessary.
 
-Python not found:
-- Windows: ensure Python is added to PATH
-- macOS/Linux: use python3 instead of python
+### Python not found
+- Windows: ensure Python is added to PATH  
+- macOS/Linux: use `python3` instead of `python`
 
 ---
 
-# Development Notes
+# File Structure
 
-- Main entry point: MidiModifier.py
-- Helper launcher: run_midimodifier.sh
-- Core libraries: mido, python-rtmidi
-- Designed for explicit routing, safe defaults, live-friendly UI, and clear monitoring of MIDI flow.
+```
+SimpleMIDISplitChannelModifier/
+│
+├── MidiModifier.py            # Main application
+├── run_midimodifier.sh        # Launcher script
+├── *.gm.json                  # GM instrument definitions
+├── *drumkits.gm.json          # Drumkit definitions
+├── midimodifier_songs.json    # Presets + setlists
+├── Images/                    # Screenshots
+└── README.md                  # Project documentation
+```
+
+---
+
+# License
+
+MIT License (recommended for open‑source hardware/software tools)
