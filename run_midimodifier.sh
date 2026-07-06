@@ -45,7 +45,7 @@ source venv/bin/activate
 # -------------------------------
 echo "Installing Python packages..."
 pip install --upgrade pip
-pip install mido python-rtmidi
+pip install mido python-rtmidi pdoc
 
 # -------------------------------
 # 4. Diagnostics
@@ -70,7 +70,16 @@ except Exception as e:
 EOF
 
 # -------------------------------
-# 5. Launch the router
+# 5. Generate documentation
+# -------------------------------
+echo "=== Generating documentation ==="
+python -m pdoc --output-dir docs MidiModifier
+echo "Documentation generated in ./docs"
+
+
+# -------------------------------
+# 6. Launch the router
 # -------------------------------
 echo "=== Launching MidiModifier.py ==="
-exec python MidiModifier.py
+python MidiModifier.py
+
