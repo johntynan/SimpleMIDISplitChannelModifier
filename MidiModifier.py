@@ -380,6 +380,8 @@ def router_loop():
         if inport:
             for msg in inport.iter_pending():
 
+                update_input_monitor(msg)
+
                 original = msg.copy()
                 split_point = split_var.get()
 
@@ -1754,9 +1756,19 @@ ttk.Label(tab_ports, text="Input Port:").grid(row=0, column=0, sticky="w")
 input_menu = ttk.OptionMenu(tab_ports, input_port_var, "")
 input_menu.grid(row=0, column=1, sticky="ew")
 
+def update_input_monitor(msg):
+    try:
+        input_monitor.insert("end", f"{msg}\n")
+        input_monitor.see("end")
+    except:
+        pass
+
+
 def refresh_ports():
     inputs = mido.get_input_names()
     outputs = mido.get_output_names()
+
+    input_monitor.delete("1.0", "end")
 
     input_menu["menu"].delete(0, "end")
     for p in inputs:
@@ -1779,6 +1791,15 @@ ttk.Button(tab_ports, text="Refresh Ports", command=refresh_ports).grid(
     row=1, column=0, columnspan=2, pady=ui["pady"]
 )
 
+# -------------------------------
+# Input Monitor
+# -------------------------------
+ttk.Label(tab_ports, text="Input Monitor:").grid(row=2, column=0, sticky="w", pady=(10, 0))
+
+input_monitor = scrolledtext.ScrolledText(tab_ports, width=50, height=10)
+input_monitor.grid(row=3, column=0, columnspan=2, sticky="nsew", pady=(5, 10))
+
+tab_ports.rowconfigure(3, weight=1)
 tab_ports.columnconfigure(1, weight=1)
 
 # ---------------- Program Change Tab ----------------
